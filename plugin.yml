@@ -1,0 +1,9 @@
+name: BannerControl
+main: me.becja10.BannerControl.BannerControl
+author: 10becja
+version: 1.0
+description: An admin tool that allows server owners to limit the number of layers a player can craft on banners.
+commands:
+  assignbanner:
+    description: Used to assign a banner to a player
+    usage: /assignbanner <player> (banner code)
