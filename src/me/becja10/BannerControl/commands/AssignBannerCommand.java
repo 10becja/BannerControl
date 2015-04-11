@@ -3,9 +3,9 @@ package me.becja10.BannerControl.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.becja10.BannerControl.BannerManager;
-import me.becja10.BannerControl.Parser;
-import me.becja10.BannerControl.PlayerManager;
+import me.becja10.BannerControl.Utils.BannerManager;
+import me.becja10.BannerControl.Utils.Parser;
+import me.becja10.BannerControl.Utils.PlayerManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,7 +33,7 @@ public class AssignBannerCommand
 		{
 			//must provide target player
 			if(args.length < 1) return false;
-			
+						
 			//get target
 			Player target = Bukkit.getPlayer(args[0]);
 			if(target == null)
@@ -45,6 +45,7 @@ public class AssignBannerCommand
 				
 			//the banner code that will be assigned to the player
 			String code = "";
+			String lore = "";
 			
 			switch (args.length)
 			{
@@ -80,8 +81,12 @@ public class AssignBannerCommand
 			case 2:
 				code = (Parser.verifyCode(args[1])) ? args[1] : code;
 				break;
+				
+			//if there are more than 2 arguments, then they sent lore to be saved as well. create a lore string.
 			default:
-				return false; //they did something wrong
+				code = (Parser.verifyCode(args[1])) ? args[1] : code;
+				for(int i = 2; i < args.length; i++)
+					lore += args[i] + " ";
 			}
 			
 			if(code == "")
@@ -119,12 +124,16 @@ public class AssignBannerCommand
 				//add the new code to the list
 				ownedBanners.add(code);
 				PlayerManager.getPlayers().set(id+".name", target.getName());
-				PlayerManager.getPlayers().set(id+".id", id);
 				PlayerManager.getPlayers().set(id+".banners", ownedBanners);
+				
 				BannerManager.getBanners().set(code+".name", target.getName());
 				BannerManager.getBanners().set(code+".id", id);
+				BannerManager.getBanners().set(code+".lore", lore);
+				
 				BannerManager.saveBanners();
 				PlayerManager.savePlayers();
+				
+				sender.sendMessage(ChatColor.GREEN + "Banner assigned");
 			}
 		}//end permission or console else
 		return true;

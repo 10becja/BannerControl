@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import me.becja10.BannerControl.Utils.BannerManager;
+import me.becja10.BannerControl.Utils.PlayerManager;
 import me.becja10.BannerControl.commands.AssignBannerCommand;
+import me.becja10.BannerControl.commands.ShowBannersCommand;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +23,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -87,33 +94,84 @@ public class BannerControl extends JavaPlugin implements Listener
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
 	{
+		//ASSIGNBANNER
 		if(cmd.getName().equalsIgnoreCase("assignbanner"))
 		{
-			AssignBannerCommand.handleCommand(sender, args);
+			return AssignBannerCommand.handleCommand(sender, args);
 		}
+		
+		//SHOWBANNERS
+		else if(cmd.getName().equalsIgnoreCase("showbanners"))
+		{
+			return ShowBannersCommand.handleCommand(sender, args);
+		}
+		
+		//CHECKBANNERS
+		else if(cmd.getName().equalsIgnoreCase("checkbanner"))
+		{
+			if(args.length != 1) return false;
+			if(BannerManager.getBanners().contains(args[0]))
+				sender.sendMessage(ChatColor.RED+"That code is taken.");
+			else
+				sender.sendMessage(ChatColor.GREEN+"That code is free.");
+		}
+		
+		//BANNERCONTROLRELOAD
+		else if(cmd.getName().equalsIgnoreCase("bannercontrolreload"))
+		{
+			//if is player, and doesn't have permission
+			if((sender instanceof Player) && !(sender.hasPermission("bannercontrol.reload")))
+					sender.sendMessage(ChatColor.DARK_RED+"No permission.");
+			else
+			{
+				BannerManager.reloadBanners();
+				PlayerManager.reloadPlayers();
+				loadConfig();
+				sender.sendMessage(ChatColor.GREEN+"BannerControl reloaded.");
+			}
+		}
+		
 		return true;
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onInventoryClick(InventoryClickEvent event)
+	{
+		Inventory inventory = event.getClickedInventory();
+		if(inventory == null)
+			return;
+		Player player = (Player) event.getWhoClicked();
+		//make sure the player doesn't shift click something into the inventory
+		if(event.isShiftClick() && player.getOpenInventory().getTopInventory().getTitle().equalsIgnoreCase(player.getName()+ "'s Banners."))
+			event.setCancelled(true);
+		
+		//make sure this is a legit banner inventory
+		if(!inventory.getTitle().equalsIgnoreCase(player.getName()+ "'s Banners."))
+			return;
+		//if the item in hand isn't air, or if they try and shift click, cancel the event
+		if(event.getCursor().getType() != Material.AIR)
+			event.setCancelled(true);
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onInvClose(InventoryCloseEvent event)
+	{
+		Player player = (Player) event.getPlayer();
+		if(event.getInventory().getTitle().equalsIgnoreCase(player.getName()+ "'s Banners."))
+			event.getInventory().clear();
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onInvDrag(InventoryDragEvent event)
+	{
+		Player player = (Player) event.getWhoClicked();
+		if(event.getInventory().getTitle().equalsIgnoreCase(player.getName()+ "'s Banners."))
+			event.setCancelled(true);
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onCraft(PrepareItemCraftEvent event)
 	{
-		/*
-		//don't care about anything other than banners right now
-		if(event.getRecipe().getResult().getType() != Material.BANNER) return;
-		int banners = 0; //track how many banners are being used to craft
-		for(ItemStack i : event.getInventory().getMatrix())
-			if(i != null && i.getType() == Material.BANNER)
-				banners++;
-		//0 == crafting blank banner; 2 == copying banner
-		if(!(banners == 0 || banners == 2))
-		{
-			event.getInventory().setResult(new ItemStack(Material.AIR)); //set the result to air
-			for(HumanEntity p : event.getViewers())
-				if(p instanceof Player)
-					p.sendMessage(ChatColor.RED + "Special banners can not be crafted, you must earn them!");
-		}
-		*/
-		
 		//only care if a banner is being crafted
 		if(event.getRecipe().getResult().getType() != Material.BANNER) return;
 		int banners = 0; //used to see if they are copying a banner or not.

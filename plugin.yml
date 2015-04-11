@@ -7,3 +7,13 @@ commands:
   assignbanner:
     description: Used to assign a banner to a player
     usage: /assignbanner <player> (banner code)
+  showbanners:
+    description: View banners currently assigned to a player
+    usage: /showbanners (player)
+  checkbanner:
+    description: Used to see if a banner is taken or not
+    usage: /checkbanner <banner code>
+  bannercontrolreload:
+    description: Reloads files
+    usage: /<command>
+    aliases: [bcreload, bcr, bannerreload]

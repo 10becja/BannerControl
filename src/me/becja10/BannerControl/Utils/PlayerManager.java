@@ -1,4 +1,4 @@
-package me.becja10.BannerControl;
+package me.becja10.BannerControl.Utils;
 
 import java.io.File;
 import java.io.IOException;
