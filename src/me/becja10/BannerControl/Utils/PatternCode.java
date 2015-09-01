@@ -22,7 +22,7 @@ public enum PatternCode {
 	dls  ("m"),
 	drs  ("n"),
 	sc   ("z"),
-	cs   ("l"),
+	cs   ("I"),
 	ms   ("w"),
 	tl   ("C"),
 	bl   ("b"),
