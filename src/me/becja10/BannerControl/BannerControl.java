@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import me.becja10.BannerControl.Utils.BannerManager;
 import me.becja10.BannerControl.Utils.PlayerManager;
 import me.becja10.BannerControl.commands.AssignBannerCommand;
+import me.becja10.BannerControl.commands.DeleteBannerCommand;
 import me.becja10.BannerControl.commands.ShowBannersCommand;
 
 import org.bukkit.Bukkit;
@@ -104,6 +105,12 @@ public class BannerControl extends JavaPlugin implements Listener
 		else if(cmd.getName().equalsIgnoreCase("showbanners"))
 		{
 			return ShowBannersCommand.handleCommand(sender, args);
+		}
+		
+		//DELBANNER
+		else if(cmd.getName().equalsIgnoreCase("delbanner"))
+		{
+			return DeleteBannerCommand.handleCommand(sender, args);
 		}
 		
 		//CHECKBANNERS
