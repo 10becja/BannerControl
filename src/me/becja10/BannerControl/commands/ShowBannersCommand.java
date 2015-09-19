@@ -29,29 +29,24 @@ public class ShowBannersCommand
 		boolean isPlayer = false;
 		if(sender instanceof Player)
 			isPlayer = true;
-		
-		//if they are a player, see if they have permission
-		if(isPlayer && !sender.hasPermission("bannercontrol.show"))
+
+		if(!isPlayer)
+			sender.sendMessage("You aren't a player derpy derp");
+
+		else if(isPlayer && !sender.hasPermission("bannercontrol.show"))
 			sender.sendMessage(ChatColor.DARK_RED+"You do not have access to this command.");
-		
+
 		else
 		{
 			//handle different cases
 			switch (args.length)
 			{
-			
+
 			case 0: //Check own banners
-				//check to make sure sender is player
-				if(!isPlayer)
-					sender.sendMessage("You aren't a player derpy derp");
-				
-				//else they are a player, show them their banners
-				else
-					//returns false if the player can't be found
-					 if(!getPlayerBanners((Player)sender))
-						sender.sendMessage(ChatColor.RED+"You have no banners.");
-				break;
-				
+				if(!getPlayerBanners((Player)sender, (Player)sender))
+					sender.sendMessage(ChatColor.RED+"You have no banners.");
+				break;		
+
 			case 1: //Check another players banners
 				//make sure they have permission if they are a player
 				if(isPlayer && !sender.hasPermission("bannercontrol.show.others"))
@@ -64,19 +59,19 @@ public class ShowBannersCommand
 						sender.sendMessage(ChatColor.DARK_RED+"Player not found.");
 					else
 						//returns false if the player can't be found
-						if(!getPlayerBanners(target))
+						if(!getPlayerBanners(target, (Player) sender))
 							sender.sendMessage(ChatColor.RED+target.getName()+" has no banners.");
 				}
 				break;
-				
+
 			default: //they messed up
 				return false;
 			}		
 		}
 		return true;
 	}
-	
-	public static boolean getPlayerBanners(Player player)
+
+	public static boolean getPlayerBanners(Player player, Player sender)
 	{
 		String id = player.getUniqueId().toString();
 		//see if they are in the database
@@ -84,7 +79,7 @@ public class ShowBannersCommand
 		{
 			//the list of banners owned by this player in code form
 			List<String> banners = PlayerManager.getPlayers().getStringList(id+".banners");
-			
+
 			//create a new inventory to display the banners in
 			Inventory inventory = Bukkit.createInventory(null, 54, player.getName()+ "'s Banners.");
 			for(String s : banners)
@@ -95,9 +90,9 @@ public class ShowBannersCommand
 				BannerMeta bm = (BannerMeta) temp.getItemMeta();
 				//grab the base color code from the current bannercode
 				String baseCode = Parser.getBaseColor(s);
-				
+
 				bm.setBaseColor(ColorCode.getColorByCode(baseCode));
-				
+
 				//loop through all patterns and add them to meta
 				String[] patterns = Parser.splitCode(s);
 				for(int i = 1; i < patterns.length; i++)
@@ -113,7 +108,7 @@ public class ShowBannersCommand
 					bm.setLore(lore);
 					bm.setDisplayName(player.getName()+"'s flag");
 				}
-				
+
 				//add meta back to ItemStack
 				temp.setItemMeta(bm);
 				try{inventory.addItem(temp);}
@@ -123,7 +118,7 @@ public class ShowBannersCommand
 					continue;
 				}
 			}
-			player.openInventory(inventory);
+			sender.openInventory(inventory);
 			return true;
 		}
 		return false;

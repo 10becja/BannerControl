@@ -67,10 +67,18 @@ public class AssignBannerCommand
 						
 						//get the Base color and list of patterns
 						DyeColor base = meta.getBaseColor();
+						if(base == null)
+						{
+							sender.sendMessage(ChatColor.RED + "Could not fetch banner's base color. "
+									+ "This happens when trying to assign a hand crafted banner. Please use "
+									+ ChatColor.GREEN + "www.needcoolshoes.com/banner" + ChatColor.RED
+									+ " to generate a banner code and use that.");
+							return true;
+						}
 						List<Pattern> patterns = meta.getPatterns();
 						
 						//now find the code from the pattern and base
-						code = getCode(base, patterns);
+						code = Parser.getCode(base, patterns);
 					}
 				}
 				else
@@ -137,26 +145,5 @@ public class AssignBannerCommand
 			}
 		}//end permission or console else
 		return true;
-	}
-	
-	/*
-	 * This takes a base and a list of patterns and generates a code from them.
-	 */
-	private static String getCode(DyeColor base, List<Pattern> patterns) 
-	{
-		String code = "";
-		
-		//code will be like this <baseColor>a<paternColor><pattern>....
-		
-		code += (Parser.getColorCode(base) != "") ? Parser.getColorCode(base)+"a" : "" ; //add base color
-		
-		for(Pattern pattern : patterns)
-		{
-			//add pattern colors and patterns
-			code += Parser.getColorCode(pattern.getColor()) + Parser.getPatternCode(pattern.getPattern().getIdentifier());
-		}
-		
-		return code;
-	}
-	
+	}	
 }

@@ -1,9 +1,33 @@
 package me.becja10.BannerControl.Utils;
 
+import java.util.List;
+
 import org.bukkit.DyeColor;
+import org.bukkit.block.banner.Pattern;
 
 public class Parser 
 {
+	/*
+	 * This takes a base and a list of patterns and generates a code from them.
+	 */
+	public static String getCode(DyeColor base, List<Pattern> patterns) 
+	{
+		String code = "";
+		
+		//code will be like this <baseColor>a<paternColor><pattern>....
+		
+		code += (getColorCode(base) != "") ? getColorCode(base)+"a" : "" ; //add base color
+		
+		for(Pattern pattern : patterns)
+		{
+			//add pattern colors and patterns
+			code += getColorCode(pattern.getColor()) + getPatternCode(pattern.getPattern().getIdentifier());
+		}
+		
+		return code;
+	}
+	
+	
 	public static String getColorCode(DyeColor dye)
 	{
 		String color = dye.name();
