@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.command.CommandSender;
@@ -54,8 +55,10 @@ public class ShowBannersCommand
 				//they have permission
 				else
 				{
-					Player target = Bukkit.getPlayer(args[0]);
-					if(target == null)
+					@SuppressWarnings("deprecation")
+					OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+					String id = target.getUniqueId().toString();
+					if(!PlayerManager.getPlayers().contains(id))
 						sender.sendMessage(ChatColor.DARK_RED+"Player not found.");
 					else
 						//returns false if the player can't be found
@@ -71,7 +74,7 @@ public class ShowBannersCommand
 		return true;
 	}
 
-	public static boolean getPlayerBanners(Player player, Player sender)
+	public static boolean getPlayerBanners(OfflinePlayer player, Player sender)
 	{
 		String id = player.getUniqueId().toString();
 		//see if they are in the database
