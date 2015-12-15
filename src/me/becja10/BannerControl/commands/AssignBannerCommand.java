@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,7 +36,8 @@ public class AssignBannerCommand
 			if(args.length < 1) return false;
 						
 			//get target
-			Player target = Bukkit.getPlayer(args[0]);
+			@SuppressWarnings("deprecation")
+			OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
 			if(target == null)
 			{
 				sender.sendMessage(ChatColor.DARK_RED+"Player not found.");
@@ -111,7 +113,8 @@ public class AssignBannerCommand
 							BannerManager.getBanners().getString(code + ".name");
 					System.out.println(err);
 					sender.sendMessage(ChatColor.RED + err);
-					target.sendMessage(ChatColor.RED + err + ". Please contact staff");
+					if(target.isOnline())
+						((Player) target).sendMessage(ChatColor.RED + err + ". Please contact staff");
 					return true;
 				}
 				
