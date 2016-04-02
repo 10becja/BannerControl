@@ -31,7 +31,7 @@ public class DeleteBannerCommand
 		
 		else
 		{
-			ItemStack inHand = ((Player)sender).getItemInHand();
+			ItemStack inHand = ((Player)sender).getInventory().getItemInMainHand();
 			if(inHand.getType() != Material.BANNER)
 			{
 				sender.sendMessage(ChatColor.DARK_RED+"This is not a banner!");

@@ -55,7 +55,7 @@ public class AssignBannerCommand
 			case 1:
 				if(isPlayer)
 				{
-					ItemStack inHand = ((Player)sender).getItemInHand();
+					ItemStack inHand = ((Player)sender).getInventory().getItemInMainHand();
 					if(inHand.getType() != Material.BANNER)
 					{
 						sender.sendMessage(ChatColor.DARK_RED+"This is not a banner!");
